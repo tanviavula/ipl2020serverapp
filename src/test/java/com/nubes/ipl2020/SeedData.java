@@ -15,15 +15,19 @@ import com.nubes.ipl2020.domain.Team;
 @Component
 public class SeedData {
 
+	private List<Team> teams;
+
 	public List<Team> loadDataFromFile() throws IOException {
 
-		ClassLoader classLoader = getClass().getClassLoader();
-		File file = new File(classLoader.getResource("ipl2020.json").getFile());
-		ObjectMapper objectMapper = new ObjectMapper();
-		Team[] retObject = objectMapper.readValue(new FileInputStream(file.getPath()), Team[].class);
-		List<Team> teams = new ArrayList<Team>();
-		for (Team t : retObject) {
-			teams.add(t);
+		if (teams == null) {
+			teams = new ArrayList<Team>();
+			ClassLoader classLoader = getClass().getClassLoader();
+			File file = new File(classLoader.getResource("ipl2020.json").getFile());
+			ObjectMapper objectMapper = new ObjectMapper();
+			Team[] retObject = objectMapper.readValue(new FileInputStream(file.getPath()), Team[].class);
+			for (Team t : retObject) {
+				teams.add(t);
+			}
 		}
 		return teams;
 	}
