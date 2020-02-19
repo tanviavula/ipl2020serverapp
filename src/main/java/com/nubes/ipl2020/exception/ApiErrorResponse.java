@@ -1,4 +1,4 @@
-package com.nubes.ipl2020.web;
+package com.nubes.ipl2020.exception;
 
 import java.time.LocalDateTime;
 

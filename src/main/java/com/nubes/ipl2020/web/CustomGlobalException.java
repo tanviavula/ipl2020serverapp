@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.nubes.ipl2020.exception.ApiErrorResponse;
 import com.nubes.ipl2020.service.exception.PlayerNotFoundException;
 import com.nubes.ipl2020.service.exception.TeamNotFoundException;
 
