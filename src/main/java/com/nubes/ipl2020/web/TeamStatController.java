@@ -25,6 +25,9 @@ public class TeamStatController {
 	@Autowired
 	private TeamStatService teamStatService;
 
+	/*
+	 * Retruns the Team labels
+	 */
 	@GetMapping("labels")
 	public TeamLabelDTO teamLabels() {
 		return teamStatService.getTeamLabels();
