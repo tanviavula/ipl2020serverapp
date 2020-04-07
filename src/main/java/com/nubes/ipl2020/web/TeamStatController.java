@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.nubes.ipl2020.dto.MaxAmountPlayerByRoleDTO;
 import com.nubes.ipl2020.dto.PlayerDTO;
+import com.nubes.ipl2020.dto.RoleAmountDTO;
 import com.nubes.ipl2020.dto.RoleCountDTO;
 import com.nubes.ipl2020.dto.TeamAmountDTO;
 import com.nubes.ipl2020.dto.TeamDTO;
@@ -54,7 +55,7 @@ public class TeamStatController {
 	}
 
 	@GetMapping("{team}/{role}")
-	public List<PlayerDTO> playersByTeamAndRole(String teamLabel, String role) {
+	public List<PlayerDTO> playersByTeamAndRole(@PathVariable("team")String teamLabel, @PathVariable("role") String role) {
 		try {
 			List<PlayerDTO> playersByRole = teamStatService.getPlayersByTeamAndRole(teamLabel, role);
 			return playersByRole;
@@ -91,6 +92,12 @@ public class TeamStatController {
 	public List<PlayerDTO> search(@PathVariable("name") String name) {
 		List<PlayerDTO> players = teamStatService.search(name);
 		return players;
+	}
+	
+	@GetMapping("{teamlabel}")
+	public List<RoleAmountDTO> roleAmountByTeam(@PathVariable("teamlabel") String teamLabel) {
+		List<RoleAmountDTO> roleAmount = teamStatService.getRoleAmountTeam(teamLabel);
+		return roleAmount;
 	}
 
 }

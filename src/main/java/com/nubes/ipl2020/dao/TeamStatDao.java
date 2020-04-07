@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.nubes.ipl2020.dto.MaxAmountPlayerByRoleDTO;
 import com.nubes.ipl2020.dto.PlayerDTO;
+import com.nubes.ipl2020.dto.RoleAmountDTO;
 import com.nubes.ipl2020.dto.RoleCountDTO;
 import com.nubes.ipl2020.dto.TeamAmountDTO;
 import com.nubes.ipl2020.dto.TeamDTO;
@@ -15,6 +16,7 @@ public interface TeamStatDao {
 		public TeamLabelDTO getTeamLabels();
 		public List<PlayerDTO> getPlayersByTeam(String teamLabel);
 		public List<RoleCountDTO> getRoleCountByTeam(String teamLabel);
+		public List<RoleAmountDTO> getRoleAmountTeam(String teamLabel);
 		public List<PlayerDTO> getPlayersByTeamAndRole(String teamLabel,String role) ;
 		public List<TeamDTO> getTeamDetails();
 		public List<TeamAmountDTO> getTotalAmountByTeam();

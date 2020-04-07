@@ -1,4 +1,5 @@
 package com.nubes.ipl2020.dao;
+
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
@@ -22,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import com.nubes.ipl2020.dto.MaxAmountPlayerByRoleDTO;
 import com.nubes.ipl2020.dto.PlayerDTO;
+import com.nubes.ipl2020.dto.RoleAmountDTO;
 import com.nubes.ipl2020.dto.RoleCountDTO;
 import com.nubes.ipl2020.dto.TeamAmountDTO;
 import com.nubes.ipl2020.dto.TeamDTO;
@@ -40,11 +42,8 @@ public class TeamStatDaoImpl implements TeamStatDao {
 
 	@Override
 	public TeamLabelDTO getTeamLabels() {
-		Aggregation aggr = newAggregation(
-				group("null").addToSet("label").as("labels"), 
-				project().andExclude("_id")
-		);
-		
+		Aggregation aggr = newAggregation(group("null").addToSet("label").as("labels"), project().andExclude("_id"));
+
 		AggregationResults<TeamLabelDTO> res = mongoOperations.aggregate(aggr, "team", TeamLabelDTO.class);
 		TeamLabelDTO labels = res.getUniqueMappedResult();
 		return labels;
@@ -52,12 +51,9 @@ public class TeamStatDaoImpl implements TeamStatDao {
 
 	@Override
 	public List<PlayerDTO> getPlayersByTeam(String teamLabel) {
-		Aggregation aggr = newAggregation(
-				match(Criteria.where("label").is(teamLabel)),
-				unwind("players"),
+		Aggregation aggr = newAggregation(match(Criteria.where("label").is(teamLabel)), unwind("players"),
 				project().andExclude("_id").and("label").as("label").and("players.player").as("name")
-						.and("players.price").as("price").and("players.role").as("role")
-		);
+						.and("players.price").as("price").and("players.role").as("role"));
 
 		AggregationResults<PlayerDTO> res = mongoOperations.aggregate(aggr, "team", PlayerDTO.class);
 		List<PlayerDTO> playersDetails = res.getMappedResults();
@@ -66,9 +62,7 @@ public class TeamStatDaoImpl implements TeamStatDao {
 
 	@Override
 	public List<RoleCountDTO> getRoleCountByTeam(String teamLabel) {
-		Aggregation aggr = newAggregation(
-				match(Criteria.where("label").is(teamLabel)), 
-				unwind("players"),
+		Aggregation aggr = newAggregation(match(Criteria.where("label").is(teamLabel)), unwind("players"),
 				group("players.role").count().as("count"),
 				project().and("_id").as("roleName").and("count").as("count").andExclude("_id")
 
@@ -80,9 +74,7 @@ public class TeamStatDaoImpl implements TeamStatDao {
 
 	@Override
 	public List<PlayerDTO> getPlayersByTeamAndRole(String teamLabel, String role) {
-		Aggregation aggr = newAggregation(
-				match(Criteria.where("label").is(teamLabel)),
-				unwind("players"),
+		Aggregation aggr = newAggregation(match(Criteria.where("label").is(teamLabel)), unwind("players"),
 				project().andExclude("_id").and("label").as("label").and("players.player").as("name")
 						.and("players.price").as("price").and("players.role").as("role"),
 				match(Criteria.where("role").is(role)));
@@ -101,9 +93,7 @@ public class TeamStatDaoImpl implements TeamStatDao {
 
 	@Override
 	public List<TeamAmountDTO> getTotalAmountByTeam() {
-		Aggregation aggr = newAggregation(
-				unwind("players"), 
-				group("label").sum("players.price").as("amount"),
+		Aggregation aggr = newAggregation(unwind("players"), group("label").sum("players.price").as("amount"),
 				project().and("_id").as("teamName").and("amount").as("amount"));
 
 		AggregationResults<TeamAmountDTO> res = mongoOperations.aggregate(aggr, "team", TeamAmountDTO.class);
@@ -113,17 +103,16 @@ public class TeamStatDaoImpl implements TeamStatDao {
 
 	@Override
 	public List<MaxAmountPlayerByRoleDTO> getMaxAountPlayerByRole() {
-		
+
 		Document obj = new Document();
 		obj.put("name", "$players.player");
 		obj.put("label", "$label");
 		obj.put("price", "$players.price");
 		obj.put("role", "$players.role");
-		
-		Aggregation aggr = newAggregation(
-				unwind("players"),
+
+		Aggregation aggr = newAggregation(unwind("players"),
 				group("players.role").max("players.price").as("maxprice").push(obj).as("players"),
-				
+
 				project().and("_id").as("role").and("maxprice").as("amount").and("players").as("players")
 						.and(new AggregationExpression() {
 							@Override
@@ -158,16 +147,28 @@ public class TeamStatDaoImpl implements TeamStatDao {
 
 	@Override
 	public List<PlayerDTO> search(String name) {
-		Aggregation aggr = newAggregation(
-				unwind("players"),
-				match(Criteria.where("players.player").regex(".*"+name+".*", "i")),
-				project().and("label").as("label").and("players.player").as("name")
-						.and("players.price").as("price").and("players.role").as("role").andExclude("_id"),
+		Aggregation aggr = newAggregation(unwind("players"),
+				match(Criteria.where("players.player").regex(".*" + name + ".*", "i")),
+				project().and("label").as("label").and("players.player").as("name").and("players.price").as("price")
+						.and("players.role").as("role").andExclude("_id"),
 				sort(Direction.DESC, "price"));
 		AggregationResults<PlayerDTO> res = mongoOperations.aggregate(aggr, "team", PlayerDTO.class);
 		List<PlayerDTO> playersList = res.getMappedResults();
 		LOG.info("Search Mathched players count : {}", playersList.size());
 		return playersList;
+	}
+
+	@Override
+	public List<RoleAmountDTO> getRoleAmountTeam(String teamLabel) {
+		Aggregation aggr = newAggregation(
+				unwind("players"),
+				match(Criteria.where("label").is(teamLabel)),
+				group("players.role").sum("players.price").as("amount"),
+				project().and("_id").as("roleName").and("amount").as("amount").andExclude("_id"));
+		AggregationResults<RoleAmountDTO> res = mongoOperations.aggregate(aggr, "team", RoleAmountDTO.class);
+		List<RoleAmountDTO> roleAmountList = res.getMappedResults();
+		LOG.info("Search Mathched players count : {}", roleAmountList.size());
+		return roleAmountList;
 	}
 
 }

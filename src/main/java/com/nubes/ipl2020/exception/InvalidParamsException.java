@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class InvalidParamsException {
+	
 	@ExceptionHandler({ IllegalArgumentException.class})
 	public ResponseEntity<ApiErrorResponse> handleNotFound(Exception e) throws IOException {
 		ApiErrorResponse error = new ApiErrorResponse();
@@ -18,4 +19,5 @@ public class InvalidParamsException {
 		error.setError(e.getMessage());
 		return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
 	}
+	
 }
