@@ -65,7 +65,7 @@ public class User {
 	}
 
 	public void setRoles(Set<Role> roles) {
-		if(roles==null || role.isEmpty()) {
+		if(roles==null || roles.isEmpty()) {
 			this.roles = new HashSet<Role>();
 			Role role = new Role("USER");
 			this.roles.add(role);
