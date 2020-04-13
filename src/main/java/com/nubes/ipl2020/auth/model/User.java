@@ -13,7 +13,7 @@ public class User {
 	private String email;
 	private String password;
 	private String fullname;
-	private boolean enabled;
+	private boolean enabled = true;
 	private Set<Role> roles;
 
 	public String getId() {
@@ -53,7 +53,11 @@ public class User {
 	}
 
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+		if(enabled == false && this.enabled == true){
+			this.enabled = false;
+		}else {
+			this.enabled = true;
+		}
 	}
 
 	public Set<Role> getRoles() {
@@ -61,6 +65,11 @@ public class User {
 	}
 
 	public void setRoles(Set<Role> roles) {
+		if(roles==null || role.isEmpty()) {
+			this.roles = new HashSet<Role>();
+			Role role = new Role("USER");
+			this.roles.add(role);
+		}
 		this.roles = roles;
 	}
 

@@ -94,7 +94,7 @@ public class TeamStatController {
 		return players;
 	}
 	
-	@GetMapping("{teamlabel}")
+	@GetMapping("amountbyrole/{teamlabel}")
 	public List<RoleAmountDTO> roleAmountByTeam(@PathVariable("teamlabel") String teamLabel) {
 		List<RoleAmountDTO> roleAmount = teamStatService.getRoleAmountTeam(teamLabel);
 		return roleAmount;
