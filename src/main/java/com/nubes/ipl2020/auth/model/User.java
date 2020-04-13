@@ -1,7 +1,7 @@
 package com.nubes.ipl2020.auth.model;
 
 import java.util.Set;
-
+import java.util.HashSet;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
