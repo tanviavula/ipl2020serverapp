@@ -48,7 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.csrf().disable();
-				http.authorizeRequests().antMatchers("/api/ipl2020/admin/**").hasRole("ADMIN");
+				http.authorizeRequests().antMatchers("/ipl2020/admin/**").hasRole("ADMIN");
 				http.authorizeRequests().antMatchers("/authenticate").permitAll().antMatchers("/register").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
 				and().sessionManagement()

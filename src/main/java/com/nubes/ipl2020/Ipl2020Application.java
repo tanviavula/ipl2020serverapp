@@ -29,7 +29,6 @@ public class Ipl2020Application {
 		application.run(args);
 	}
 
-
 	private ApiInfo metaData() {
 		return new ApiInfoBuilder().title("IPL-2020 Statistics")
 				.description("\"Spring Boot REST API for IPL-2020 Statistics\"").version("1.0.0").build();
