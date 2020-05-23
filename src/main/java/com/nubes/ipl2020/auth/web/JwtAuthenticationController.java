@@ -36,6 +36,7 @@ public class JwtAuthenticationController {
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+		
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 		final String token = jwtTokenUtil.generateToken(userDetails);
 		return ResponseEntity.ok(new JwtResponse(token));
@@ -45,16 +46,17 @@ public class JwtAuthenticationController {
 	@PostMapping("/register")
 	public ResponseEntity register(@RequestBody User user) {
 		
-		User userExists = userDetailsService.findUserByEmail(user.getEmail());
+		User userExists = userDetailsService.findByUsername(user.getUsername());
 		if (userExists != null) {
 			throw new BadCredentialsException("User with username: " + user.getEmail() + " already exists");
 		}
 		System.out.println(user.getRoles());
-		userDetailsService.saveUser(user);
+		User regUser = userDetailsService.saveUser(user);
 		Map<Object, Object> model = new HashMap<>();
-		model.put("message", "User registered successfully");
+		model.put("message", "User registered successfully with id:"+regUser.getId());
 		return ResponseEntity.ok(model);
 	}
+	
 
 	private void authenticate(String username, String password) throws Exception {
 		try {

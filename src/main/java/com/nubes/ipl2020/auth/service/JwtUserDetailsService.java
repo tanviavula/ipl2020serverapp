@@ -1,63 +1,49 @@
 package com.nubes.ipl2020.auth.service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.nubes.ipl2020.auth.model.AppUserDetails;
 import com.nubes.ipl2020.auth.model.Role;
 import com.nubes.ipl2020.auth.model.User;
 import com.nubes.ipl2020.auth.repo.UserRepository;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
-	
-	@Autowired
-	private UserRepository userRepository;
-
-	
 
 	@Autowired
-	private PasswordEncoder bCryptPasswordEncoder;
-	
-	public User findUserByEmail(String email) {
-	    return userRepository.findByEmail(email);
-	}
-	
-	public void saveUser(User user) {
-	    user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-	    user.setEnabled(true);
-	    userRepository.save(user);
-	}
-	
+	private UserRepository userRepo;
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	@Override
-	public UserDetails loadUserByUsername(String email){
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Optional<User> optionalUser = userRepo.findByUsername(username);
+		optionalUser.orElseThrow(() -> new UsernameNotFoundException("User name Found!"));
+		AppUserDetails appUserDetails = new AppUserDetails();
+		appUserDetails.setUser(optionalUser.get());
+		return appUserDetails;
+	}
 
-	    User user = userRepository.findByEmail(email);
-	    if(user != null) {
-	        List<GrantedAuthority> authorities = getUserAuthority(user.getRoles());
-	        return buildUserForAuthentication(user, authorities);
-	    } else {
-	        throw new UsernameNotFoundException("Username not found");
-	    }
+	public User findByUsername(String username) {
+		
+		Optional<User> userOpt= userRepo.findByUsername(username);
+		
+		return userOpt.isPresent()?userOpt.get():null;
 	}
-	
-	private List<GrantedAuthority> getUserAuthority(Set<Role> userRoles) {
-	    Set<GrantedAuthority> roles = new HashSet<>();
-	    userRoles.forEach(role -> roles.add(new SimpleGrantedAuthority(role.getRole())));
-        return new ArrayList<>(roles);
+
+	public User saveUser(User user) {
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		if(user.getRoles()==null || user.getRoles().size()==0) {
+			user.getRoles().add(new Role("USER"));
+		}
+		return userRepo.save(user);
+		
 	}
-	
-	private UserDetails buildUserForAuthentication(User user, List<GrantedAuthority> authorities) {
-	    return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
-	}
+
 }
