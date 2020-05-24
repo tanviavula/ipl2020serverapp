@@ -19,7 +19,7 @@ public interface AdminService {
 
 	Player addPlayersToTeam(List<Player> players, String teamid);
 
-	Player updatePlayer(Player player, ObjectId id);
+	Player updatePlayer(Player player);
 
 	boolean deletePlayer(ObjectId id);
 

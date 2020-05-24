@@ -99,7 +99,7 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public Player updatePlayer(Player player, ObjectId id) {
+	public Player updatePlayer(Player player) {
 
 		return null;
 	}

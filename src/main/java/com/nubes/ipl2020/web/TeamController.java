@@ -1,5 +1,6 @@
 package com.nubes.ipl2020.web;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,14 +31,24 @@ public class TeamController {
 		return adminService.updateTeam(team);
 	}
 
+	@DeleteMapping("deleteteam/{teamid}")
+	public boolean deleteTeam(@PathVariable String teamid) {
+		return adminService.deleteTeam(teamid);
+	}
+
 	@PostMapping("addPlayer/{teamid}")
 	public Player addPlayerToTeam(@RequestBody Player player, @PathVariable String teamid) {
 		return adminService.addPlayerToTeam(player, teamid);
 	}
 
-	@DeleteMapping("deleteteam/{teamid}")
-	public boolean deleteTeam(@PathVariable String teamid) {
-		return adminService.deleteTeam(teamid);
+	@PutMapping("updateplayer")
+	public Player updatePlayer(@RequestBody Player player) {
+		return adminService.updatePlayer(player);
+	}
+
+	@DeleteMapping("deleteplayer/{playerid}")
+	public boolean deletePlayer(@PathVariable String playerid) {
+		return false; // adminService.deletePlayer((ObjectId)playerid);
 	}
 
 	// CRUD team
